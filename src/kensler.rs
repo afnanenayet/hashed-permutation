@@ -65,3 +65,25 @@ impl HashedPermutation {
         Ok((i + seed) % n)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::*;
+
+    #[test]
+    // This method is a sanity check that tests to see if a shuffle has points that all stay within
+    // the domain that they are supposed to.
+    fn test_domain() {
+        let lengths = vec![100, 5, 13, 128];
+
+        for length in lengths {
+            let perm = HashedPermutation { seed: 0, length };
+
+            for i in 0..perm.length {
+                let res = perm.shuffle(i);
+                assert!(res.is_ok());
+                assert!(res.unwrap() < perm.length);
+            }
+        }
+    }
+}

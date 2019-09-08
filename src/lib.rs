@@ -11,7 +11,7 @@
 //! Using this library is extremely easy.
 //!
 //! ```
-//! use hashed-permutation::HashedPermutation;
+//! use crate::hashed_permutation::HashedPermutation;
 //!
 //! let perm = HashedPermutation {
 //!     seed: 1234,
@@ -19,7 +19,7 @@
 //! };
 //! ```
 
-pub mod hashed_permutation;
+mod hashed_permutation;
 pub mod error;
 
-pub use hashed_permutation::HashedPermutation;
+pub use kensler::HashedPermutation;
