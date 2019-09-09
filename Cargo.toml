@@ -10,10 +10,7 @@ license = "MIT"
 readme = "docs/README.md"
 
 [badges]
-azure-devops = { 
-    project = "afnanenayet/hashed-permutation",
-    pipeline = "afnanenayet.hashed-permutation" 
-}
+azure-devops = { project = "afnanenayet/hashed-permutation", pipeline = "afnanenayet.hashed-permutation" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
