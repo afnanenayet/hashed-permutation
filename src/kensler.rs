@@ -74,15 +74,45 @@ mod test {
     // This method is a sanity check that tests to see if a shuffle has points that all stay within
     // the domain that they are supposed to.
     fn test_domain() {
-        let lengths = vec![100, 5, 13, 128];
+        let lengths = vec![100, 5, 13, 128, 249];
+        let seeds = vec![100, 5, 13, 128, 249];
 
-        for length in lengths {
-            let perm = HashedPermutation { seed: 0, length };
+        for (length, seed) in lengths.iter().zip(seeds) {
+            let perm = HashedPermutation {
+                seed,
+                length: *length,
+            };
 
             for i in 0..perm.length {
                 let res = perm.shuffle(i);
                 assert!(res.is_ok());
                 assert!(res.unwrap() < perm.length);
+            }
+        }
+    }
+
+    #[test]
+    // This method checks to see that a permutation does not have any collisions and that every
+    // number maps to another unique number. In other words, we are testing to see whether we have
+    // a bijective function.
+    fn test_bijection() {
+        let lengths = vec![100, 5, 13, 128, 249];
+        let seeds = vec![100, 5, 13, 128, 249];
+
+        for (length, seed) in lengths.iter().zip(seeds) {
+            let perm = HashedPermutation {
+                seed,
+                length: *length,
+            };
+
+            // TODO create a hashmap that stores the shuffle
+            // Check that each entry doesn't exist
+            // Check that every number is "hit" (as they'd have to be) for a perfect bijection
+            // Check that the number is within range
+
+            for i in 0..perm.length {
+                let res = perm.shuffle(i);
+                assert!(res.is_ok());
             }
         }
     }
