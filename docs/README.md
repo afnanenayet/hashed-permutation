@@ -9,4 +9,8 @@ you to take an array of the elements [0 ... n) and shuffle it with no memory
 overhead and very little computational overhead. This works by using a clever
 hash function to effectively permute all of the elements in the array.
 
+Basically, you get a nearly free method to shuffle a bunch of numbers. This
+allows you to sample with no replacement, without needing to save all of the
+numbers in the range (0...n).
+
 You can find the paper here: https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf
