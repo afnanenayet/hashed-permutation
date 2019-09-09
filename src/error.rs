@@ -1,12 +1,14 @@
-#[cfg(failure)]
+#[cfg(feature = "failure-crate")]
 use failure::Fail;
+
+#[cfg(not(feature = "failure-crate"))]
 use std::fmt::{self, Display};
 
 #[derive(Debug)]
-#[cfg_attr(feature = "failure", derive(Fail))]
+#[cfg_attr(feature = "failure-crate", derive(Fail))]
 pub enum PermutationError {
     #[cfg_attr(
-        feature = "failure",
+        feature = "failure-crate",
         fail(
             display = "Attempted to shuffle {}, where the highest number is {}",
             shuffle, max_shuffle
@@ -15,7 +17,7 @@ pub enum PermutationError {
     ShuffleOutOfRange { shuffle: u32, max_shuffle: u32 },
 }
 
-#[cfg(not(failure))]
+#[cfg(not(feature = "failure-crate"))]
 impl Display for PermutationError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
