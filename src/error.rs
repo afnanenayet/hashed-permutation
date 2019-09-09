@@ -15,6 +15,12 @@ pub enum PermutationError {
         )
     )]
     ShuffleOutOfRange { shuffle: u32, max_shuffle: u32 },
+
+    #[cfg_attr(
+        feature = "failure-crate",
+        fail(display = "Attempted to create a permutation struct with a length less than 1")
+    )]
+    LengthTooSmall {},
 }
 
 #[cfg(not(feature = "failure-crate"))]
@@ -28,6 +34,10 @@ impl Display for PermutationError {
                 f,
                 "Attempted to shuffle {}, where the highest number is {}",
                 shuffle, max
+            ),
+            PermutationError::LengthTooSmall {} => write!(
+                f,
+                "Attempted to create a permutation struct with a length less than 1"
             ),
         }
     }

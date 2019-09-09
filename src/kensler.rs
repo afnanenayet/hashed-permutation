@@ -5,6 +5,8 @@
 //! on correlated multi-jittered sampling.
 
 use crate::error::{PermutationError, PermutationResult};
+#[cfg(feature = "use-rand")]
+use rand::prelude::*;
 
 /// The `HashedPermutation` struct stores the initial `seed` and `length` of the permutation
 /// vector. In other words, if you want to shuffle the numbers from `0..n`, then `length = n`.
@@ -23,6 +25,20 @@ pub struct HashedPermutation {
 }
 
 impl HashedPermutation {
+    /// Create a new instance of the hashed permutation with a random seed.
+    ///
+    /// This method creates a hashed permutation of some length and initializes the seed to some
+    /// random number created by Rust's `thread_rng`.
+    #[cfg(feature = "use-rand")]
+    pub fn new(length: u32) -> PermutationResult<Self> {
+        if length < 1 {
+            return Err(PermutationError::LengthTooSmall {});
+        }
+        // Uses thread-rng under the hood
+        let seed = rand::random();
+        Ok(HashedPermutation { length, seed })
+    }
+
     /// Shuffle or permute a particular value.
     ///
     /// This method uses the technique described in Kensler's paper to perform an in-place shuffle
