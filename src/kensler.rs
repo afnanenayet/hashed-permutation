@@ -16,7 +16,8 @@ pub struct HashedPermutation {
     /// deterministic, so using the same seed will yield the same permutation every time.
     pub seed: u32,
 
-    /// The upper bound on the range of numbers to shuffle (from `0..length`).
+    /// The upper bound on the range of numbers to shuffle (from `0..length`). This value must be
+    /// greater zero, otherwise undefined behavior may occur.
     pub length: u32,
 }
 
@@ -69,13 +70,25 @@ impl HashedPermutation {
 #[cfg(test)]
 mod test {
     use super::*;
+    use std::collections::HashMap;
+
+    /// A convenient helper method that returns a pair of lengths and seeds (in that order).
+    ///
+    /// This method defines the lengths and the seeds for the test cases, since these are reused
+    /// in the tests, and it's best practice to consolidate them in one place so code is not
+    /// repeated.
+    fn lengths_and_seeds() -> (Vec<u32>, Vec<u32>) {
+        let lengths = vec![100, 5, 13, 128, 249];
+        let seeds = vec![100, 5, 13, 128, 249];
+        assert_eq!(lengths.len(), seeds.len());
+        (lengths, seeds)
+    }
 
     #[test]
     // This method is a sanity check that tests to see if a shuffle has points that all stay within
     // the domain that they are supposed to.
     fn test_domain() {
-        let lengths = vec![100, 5, 13, 128, 249];
-        let seeds = vec![100, 5, 13, 128, 249];
+        let (lengths, seeds) = lengths_and_seeds();
 
         for (length, seed) in lengths.iter().zip(seeds) {
             let perm = HashedPermutation {
@@ -96,8 +109,7 @@ mod test {
     // number maps to another unique number. In other words, we are testing to see whether we have
     // a bijective function.
     fn test_bijection() {
-        let lengths = vec![100, 5, 13, 128, 249];
-        let seeds = vec![100, 5, 13, 128, 249];
+        let (lengths, seeds) = lengths_and_seeds();
 
         for (length, seed) in lengths.iter().zip(seeds) {
             let perm = HashedPermutation {
@@ -105,14 +117,40 @@ mod test {
                 length: *length,
             };
 
-            // TODO create a hashmap that stores the shuffle
             // Check that each entry doesn't exist
             // Check that every number is "hit" (as they'd have to be) for a perfect bijection
             // Check that the number is within range
+            let mut map = HashMap::new();
 
             for i in 0..perm.length {
                 let res = perm.shuffle(i);
-                assert!(res.is_ok());
+                let res = res.unwrap();
+                let map_result = map.get(&res);
+                assert!(map_result.is_none());
+                map.insert(res, i);
+            }
+            // Need to dereference the types into regular integers
+            let mut keys_vec: Vec<u32> = map.keys().into_iter().map(|k| *k).collect();
+            keys_vec.sort();
+            let mut vals_vec: Vec<u32> = map.values().into_iter().map(|v| *v).collect();
+            vals_vec.sort();
+            let ground_truth: Vec<u32> = (0..*length).collect();
+            assert_eq!(ground_truth, keys_vec);
+            assert_eq!(ground_truth, vals_vec);
+        }
+    }
+
+    #[test]
+    fn test_out_of_range() {
+        let lengths = vec![1, 50, 256, 18];
+        let offsets = vec![1, 5, 15, 100];
+
+        for length in lengths {
+            let perm = HashedPermutation { seed: 0, length };
+
+            for offset in &offsets {
+                let result = perm.shuffle(length + offset);
+                assert!(result.is_err());
             }
         }
     }

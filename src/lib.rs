@@ -6,20 +6,28 @@
 //! is extremely efficient, with no memory overhead (i.e. you don't have to store the whole range
 //! of numbers).
 //!
+//! This is effectively the same as taking some vector of numbers from `[0..n)`, randomly shuffling
+//! each element, and then calling the nth index of that vector. Kensler's algorithm offers a way
+//! to achieve the same effect, except we don't need to store a whole vector for that range of
+//! numbers.
+//!
 //! # Example Usage
 //!
-//! Using this library is extremely easy.
+//! Using this library is fairly simple:
 //!
-//! ```
-//! use hashed_permutation::HashedPermutation;
+//! ```rust
+//! # use hashed_permutation::HashedPermutation;
 //!
 //! let perm = HashedPermutation {
 //!     seed: 1234,
 //!     length: 10,
 //! };
+//!
+//! // Let's pick a randomly permuted number
+//! let permuted_number = perm.shuffle(0);
 //! ```
 
-mod kensler;
 pub mod error;
+mod kensler;
 
 pub use kensler::HashedPermutation;
