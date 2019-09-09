@@ -24,10 +24,11 @@
 //! };
 //!
 //! // Let's pick a randomly permuted number
-//! let permuted_number = perm.shuffle(0);
+//! let permuted_number = perm.shuffle(0).unwrap();
 //! ```
 
-pub mod error;
+mod error;
 mod kensler;
 
+pub use error::{PermutationError, PermutationResult};
 pub use kensler::HashedPermutation;

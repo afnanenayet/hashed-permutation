@@ -1,7 +1,8 @@
 //! The module for the hashed permutation implementation and the struct that stores its state.
 //!
 //! This method was first conceived by Andrew Kensler of Pixar Research, and discussed in his 2013
-//! paper on correlated multi-jittered sampling.
+//! [paper](https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf)
+//! on correlated multi-jittered sampling.
 
 use crate::error::{PermutationError, PermutationResult};
 
