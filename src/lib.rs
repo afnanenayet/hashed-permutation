@@ -26,6 +26,14 @@
 //! // Let's pick a randomly permuted number
 //! let permuted_number = perm.shuffle(0).unwrap();
 //! ```
+//!
+//! This library also provides optional support for the [failure](https://crates.io/crates/failure)
+//! crate. If you want to use `failure`, simply add the "failure-crate" dependency in your Cargo
+//! manifest.
+//!
+//! ```toml
+//! hashed-permutation = { version = "2.0.0", features = ["failure-crate"] }
+//! ```
 
 mod error;
 mod kensler;

@@ -14,4 +14,8 @@ azure-devops = { project = "afnanenayet/hashed-permutation", pipeline = "afnanen
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-failure = "0.1"
+failure = { version = "0.1", optional = true }
+
+[features]
+default = []
+failure-crate = ["failure"]

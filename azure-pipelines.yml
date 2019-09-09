@@ -19,7 +19,7 @@ jobs:
     displayName: 'Install rust'
   - script: rustc --version
     displayName: 'Rust version'
-  - script: cargo test
+  - script: cargo test --all-features
     displayName: 'Run tests'
 
 - job: macOS
@@ -32,7 +32,7 @@ jobs:
     displayName: 'Install rust'
   - script: rustc --version
     displayName: 'Rust version'
-  - script: cargo test
+  - script: cargo test --all-features
     displayName: 'Run tests'
 
 - job: Windows
@@ -46,7 +46,7 @@ jobs:
     displayName: 'Install rust'
   - script: rustc --version
     displayName: 'Rust version'
-  - script: cargo test
+  - script: cargo test --all-features
     displayName: 'Run tests'
 
 - job: Plumbing
@@ -55,7 +55,7 @@ jobs:
       displayName: 'Create Github release'
       inputs:
         githubConnection: afnanenayetgh
-        repositoryName: afnanenayet/oars
+        repositoryName: afnanenayet/hashed-permutation
         action: 'create'
         tagSource: auto
         compareWith: 'lastFullRelease'
