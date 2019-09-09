@@ -28,7 +28,7 @@ impl HashedPermutation {
     /// This method uses the technique described in Kensler's paper to perform an in-place shuffle
     /// with no memory overhead.
     pub fn shuffle(&self, input: u32) -> PermutationResult<u32> {
-        if input > self.length {
+        if input >= self.length {
             return Err(PermutationError::ShuffleOutOfRange {
                 shuffle: input,
                 max_shuffle: self.length,
@@ -144,7 +144,7 @@ mod test {
     #[test]
     fn test_out_of_range() {
         let lengths = vec![1, 50, 256, 18];
-        let offsets = vec![1, 5, 15, 100];
+        let offsets = vec![0, 1, 5, 15, 100];
 
         for length in lengths {
             let perm = HashedPermutation { seed: 0, length };
