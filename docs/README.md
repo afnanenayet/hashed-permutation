@@ -1,6 +1,9 @@
 # hashed-permutation
 
 [![Build Status](https://dev.azure.com/afnanenayet/hashed-permutation/_apis/build/status/afnanenayet.hashed-permutation?branchName=master)](https://dev.azure.com/afnanenayet/hashed-permutation/_build/latest?definitionId=7&branchName=master)
+[![crates badge](https://meritbadge.herokuapp.com/hashed-permutation)](https://crates.io/crates/hashed-permutation)
+[![Documentation](https://docs.rs/hashed-permutation/badge.svg)](https://docs.rs/hashed-permutation)
+![License](https://img.shields.io/crates/l/hashed-permutation/1.0.0.svg)
 
 ## Synopsis
 
