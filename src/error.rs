@@ -6,6 +6,9 @@ use std::fmt::{self, Display};
 
 #[derive(Debug)]
 #[cfg_attr(feature = "failure-crate", derive(Fail))]
+// We allow the name repitition because this struct will not make sense outside of the crate
+// otherwise, and this is exported as part of the library.
+#[allow(clippy::module-name-repetitions)]
 pub enum PermutationError {
     #[cfg_attr(
         feature = "failure-crate",

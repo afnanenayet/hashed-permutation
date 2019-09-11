@@ -43,6 +43,8 @@ impl HashedPermutation {
     ///
     /// This method uses the technique described in Kensler's paper to perform an in-place shuffle
     /// with no memory overhead.
+    // We disable the `unreadable_literal` because these literals are arbitrary
+    #[allow(clippy::unreadable_literal)]
     pub fn shuffle(&self, input: u32) -> PermutationResult<u32> {
         if input >= self.length {
             return Err(PermutationError::ShuffleOutOfRange {
