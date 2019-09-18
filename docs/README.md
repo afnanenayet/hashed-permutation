@@ -16,4 +16,7 @@ Basically, you get a nearly free method to shuffle a bunch of numbers. This
 allows you to sample with no replacement, without needing to save all of the
 numbers in the range (0...n).
 
-You can find the paper here: https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf
+You can find the paper here: https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf.
+I have a little writeup of how the algorithm works [here](https://afnan.io/post/2019-04-05-explaining-the-hashed-permutation/),
+and [Timothy Hobbs](https://github.com/timthelion) made a nice writeup explaining how to use the library itself 
+[here](https://timothy.hobbs.cz/rust-play/hashed-permutation.html).
