@@ -17,12 +17,20 @@ pub enum PermutationError {
             shuffle, max_shuffle
         )
     )]
+    /// This error is invoked when the caller attempts to use an index on the `shuffle` method that
+    /// is larger than the size of the set.
+    ///
+    /// The user can only shuffle indices that are within the set, otherwise the hashing algorithm
+    /// does not work. `shuffle` is the index that the user called, and `max_shuffle` is the size
+    /// of the permutation set (which is also the upper bound for the calling index).
     ShuffleOutOfRange { shuffle: u32, max_shuffle: u32 },
 
     #[cfg_attr(
         feature = "failure-crate",
         fail(display = "Attempted to create a permutation struct with a length less than 1")
     )]
+    /// This error represents the case where a permutation struct is created with a length that is
+    /// too small (0).
     LengthTooSmall {},
 }
 
