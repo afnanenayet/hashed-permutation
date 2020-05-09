@@ -70,11 +70,9 @@ steps:
     condition: and(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), not( eq( variables['Agent.OS'], 'Windows_NT' ) ))
     displayName: 'Create Github release'
     inputs:
-      displayName: 'Create Github release'
-      inputs:
-        githubConnection: afnanenayetgh
-        repositoryName: afnanenayet/hashed-permutation
-        action: 'create'
-        tagSource: auto
-        compareWith: 'lastFullRelease'
-        addChangeLog: true
+      githubConnection: afnanenayetgh
+      repositoryName: afnanenayet/hashed-permutation
+      action: 'create'
+      tagSource: auto
+      compareWith: 'lastFullRelease'
+      addChangeLog: true
