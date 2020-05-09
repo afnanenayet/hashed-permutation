@@ -15,7 +15,7 @@ pub struct HashedIter {
 ///
 /// ```
 /// # use hashed_permutation::HashedIter;
-/// let mut iterator = HashedIter::new_with_seed(5, 100);
+/// let mut iterator = HashedIter::new_with_seed(5, 100).unwrap();
 ///
 /// for i in iterator {
 ///     println!("{}", i);
@@ -37,11 +37,13 @@ impl HashedIter {
     }
 
     /// Create a new hashed iterator with a given length and a seed value
-    pub fn new_with_seed(length: u32, seed: u32) -> Self {
-        Self {
-            permutation_engine: HashedPermutation { seed, length },
+    pub fn new_with_seed(length: u32, seed: u32) -> PermutationResult<Self> {
+        let permutation_engine = HashedPermutation::new_with_seed(length, seed)?;
+
+        Ok(Self {
+            permutation_engine,
             current_idx: 0,
-        }
+        })
     }
 }
 
@@ -84,7 +86,7 @@ mod test {
         let (lengths, seeds) = lengths_and_seeds();
 
         for (length, seed) in lengths.iter().zip(seeds) {
-            let it = HashedIter::new_with_seed(*length, seed);
+            let it = HashedIter::new_with_seed(*length, seed).unwrap();
 
             // Check that each entry doesn't exist
             // Check that every number is "hit" (as they'd have to be) for a perfect bijection

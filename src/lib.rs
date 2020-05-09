@@ -34,7 +34,7 @@
 //! ```rust
 //! # use hashed_permutation::HashedIter;
 //! // Loop from (0..10) in a shuffled set
-//! let mut iterator = HashedIter::new_with_seed(10, 100);
+//! let mut iterator = HashedIter::new_with_seed(10, 100).unwrap();
 //!
 //! for i in iterator {
 //!     println!("{}", i);
