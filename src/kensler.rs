@@ -39,6 +39,14 @@ impl HashedPermutation {
         Ok(HashedPermutation { length, seed })
     }
 
+    /// Create a new instance of the hashed permutation given a length and seed
+    pub fn new_with_seed(length: u32, seed: u32) -> PermutationResult<Self> {
+        if length < 1 {
+            return Err(PermutationError::LengthTooSmall {});
+        }
+        Ok(HashedPermutation { length, seed })
+    }
+
     /// Shuffle or permute a particular value.
     ///
     /// This method uses the technique described in Kensler's paper to perform an in-place shuffle
