@@ -27,6 +27,20 @@
 //! let permuted_number = perm.shuffle(0).unwrap();
 //! ```
 //!
+//! ## Iterators
+//!
+//! You can also use this structure as an iterator to iterate through a permuted set from `(0..n)`.
+//!
+//! ```rust
+//! # use hashed_permutation::HashedIter;
+//! // Loop from (0..10) in a shuffled set
+//! let mut iterator = HashedIter::new_with_seed(10, 100);
+//!
+//! for i in iterator {
+//!     println!("{}", i);
+//! }
+//! ```
+//!
 //! This library also provides optional support for the [failure](https://crates.io/crates/failure)
 //! crate. If you want to use `failure`, simply add the "failure-crate" dependency in your Cargo
 //! manifest.
@@ -36,7 +50,9 @@
 //! ```
 
 mod error;
+mod iterator;
 mod kensler;
 
 pub use error::{PermutationError, PermutationResult};
+pub use iterator::HashedIter;
 pub use kensler::HashedPermutation;
