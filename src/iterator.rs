@@ -1,4 +1,4 @@
-use crate::kensler::HashedPermutation;
+use crate::{HashedPermutation, PermutationResult};
 
 /// An iterator that allows you to iterate over a sequence of permuted numbers with O(1) space.
 pub struct HashedIter {
@@ -27,11 +27,13 @@ impl HashedIter {
     /// This will create an iterator with an underlying `HashedPermutation` engine with a random
     /// seed. The seed is generated using the standard library's `thread_rng` class.
     #[cfg(feature = "use-rand")]
-    pub fn new(length: u32) -> Self {
-        Self {
-            permutation_engine: HashedPermutation::new(length),
+    pub fn new(length: u32) -> PermutationResult<Self> {
+        let permutation_engine = HashedPermutation::new(length)?;
+
+        Ok(Self {
+            permutation_engine,
             current_idx: 0,
-        }
+        })
     }
 
     /// Create a new hashed iterator with a given length and a seed value
