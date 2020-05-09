@@ -5,7 +5,7 @@
 
 trigger:
   branches:
-    include: ['master']
+    include: ['*']
   tags:
     include: ['*']
 
@@ -44,22 +44,6 @@ steps:
   - script: cargo build --all --release
     condition: and(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), not( eq( variables['Agent.OS'], 'Windows_NT' ) ))
     displayName: Build release binary
-  - task: CopyFiles@2
-    displayName: Copy assets
-    condition: and(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), not( eq( variables['Agent.OS'], 'Windows_NT' ) ))
-    inputs:
-      sourceFolder: '$(Build.SourcesDirectory)/target/release'
-      contents: |
-        nib
-      targetFolder: '$(Build.BinariesDirectory)'
-  - task: ArchiveFiles@2
-    displayName: Compress binary
-    condition: and(and(succeeded(), startsWith(variables['Build.SourceBranch'], 'refs/tags/')), not( eq( variables['Agent.OS'], 'Windows_NT' ) ))
-    inputs:
-      rootFolderOrFile: '$(Build.BinariesDirectory)/nib'
-      archiveType: 'tar'
-      tarCompression: 'gz'
-      archiveFile: '$(Build.ArtifactStagingDirectory)/nib-$(target).tar.gz'
   - bash: |
       MY_TAG="$(Build.SourceBranch)"
       MY_TAG=${MY_TAG#refs/tags/}
