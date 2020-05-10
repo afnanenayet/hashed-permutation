@@ -17,10 +17,11 @@
 //!
 //! ```rust
 //! # use hashed_permutation::HashedPermutation;
+//! use std::num::NonZeroU32;
 //!
 //! let perm = HashedPermutation {
 //!     seed: 1234,
-//!     length: 10,
+//!     length: NonZeroU32::new(10).unwrap(),
 //! };
 //!
 //! // Let's pick a randomly permuted number
@@ -33,8 +34,10 @@
 //!
 //! ```rust
 //! # use hashed_permutation::HashedIter;
+//! use std::num::NonZeroU32;
+//!
 //! // Loop from (0..10) in a shuffled set
-//! let mut iterator = HashedIter::new_with_seed(10, 100).unwrap();
+//! let mut iterator = HashedIter::new_with_seed(NonZeroU32::new(10).unwrap(), 100);
 //!
 //! for i in iterator {
 //!     println!("{}", i);
