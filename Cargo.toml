@@ -14,10 +14,9 @@ azure-devops = { project = "afnanenayet/hashed-permutation", pipeline = "afnanen
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-failure = { version = "0.1", optional = true }
 rand = { version = "0.7", optional = true }
+thiserror = "1.0"
 
 [features]
 default = []
-failure-crate = ["failure"]
 use-rand = ["rand"]
