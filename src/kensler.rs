@@ -34,7 +34,12 @@ impl HashedPermutation {
     pub fn new(length: NonZeroU32) -> Self {
         // Uses thread-rng under the hood
         let seed = rand::random();
-        Ok(HashedPermutation { length, seed })
+        HashedPermutation { length, seed }
+    }
+
+    /// Create a new instance of the hashed permutation given a length and seed
+    pub fn new_with_seed(length: NonZeroU32, seed: u32) -> Self {
+        HashedPermutation { length, seed }
     }
 
     /// Shuffle or permute a particular value.
@@ -95,8 +100,11 @@ mod test {
     /// This method defines the lengths and the seeds for the test cases, since these are reused
     /// in the tests, and it's best practice to consolidate them in one place so code is not
     /// repeated.
-    fn lengths_and_seeds() -> (Vec<u32>, Vec<u32>) {
-        let lengths = vec![100, 5, 13, 128, 249];
+    fn lengths_and_seeds() -> (Vec<NonZeroU32>, Vec<u32>) {
+        let lengths: Vec<NonZeroU32> = vec![100, 5, 13, 128, 249]
+            .iter()
+            .map(|&x| NonZeroU32::new(x).unwrap())
+            .collect();
         let seeds = vec![100, 5, 13, 128, 249];
         assert_eq!(lengths.len(), seeds.len());
         (lengths, seeds)
@@ -108,16 +116,13 @@ mod test {
     fn test_domain() {
         let (lengths, seeds) = lengths_and_seeds();
 
-        for (length, seed) in lengths.iter().zip(seeds) {
-            let perm = HashedPermutation {
-                seed,
-                length: *length,
-            };
+        for (&length, seed) in lengths.iter().zip(seeds) {
+            let perm = HashedPermutation { seed, length };
 
-            for i in 0..perm.length {
+            for i in 0..perm.length.get() {
                 let res = perm.shuffle(i);
                 assert!(res.is_ok());
-                assert!(res.unwrap() < perm.length);
+                assert!(res.unwrap() < perm.length.get());
             }
         }
     }
@@ -140,7 +145,7 @@ mod test {
             // Check that the number is within range
             let mut map = HashMap::new();
 
-            for i in 0..perm.length {
+            for i in 0..perm.length.get() {
                 let res = perm.shuffle(i);
                 let res = res.unwrap();
                 let map_result = map.get(&res);
@@ -152,7 +157,7 @@ mod test {
             keys_vec.sort();
             let mut vals_vec: Vec<u32> = map.values().into_iter().map(|v| *v).collect();
             vals_vec.sort();
-            let ground_truth: Vec<u32> = (0..*length).collect();
+            let ground_truth: Vec<u32> = (0..length.get()).collect();
             assert_eq!(ground_truth, keys_vec);
             assert_eq!(ground_truth, vals_vec);
         }
@@ -160,14 +165,17 @@ mod test {
 
     #[test]
     fn test_out_of_range() {
-        let lengths = vec![1, 50, 256, 18];
+        let lengths: Vec<NonZeroU32> = vec![1, 50, 256, 18]
+            .iter()
+            .map(|&x| NonZeroU32::new(x).unwrap())
+            .collect();
         let offsets = vec![0, 1, 5, 15, 100];
 
         for length in lengths {
             let perm = HashedPermutation { seed: 0, length };
 
             for offset in &offsets {
-                let result = perm.shuffle(length + offset);
+                let result = perm.shuffle(length.get() + offset);
                 assert!(result.is_err());
             }
         }
