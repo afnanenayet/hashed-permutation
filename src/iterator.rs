@@ -1,4 +1,5 @@
-use crate::{HashedPermutation, PermutationResult};
+use crate::HashedPermutation;
+use std::num::NonZeroU32;
 
 /// An iterator that allows you to iterate over a sequence of permuted numbers with O(1) space.
 pub struct HashedIter {
@@ -15,7 +16,9 @@ pub struct HashedIter {
 ///
 /// ```
 /// # use hashed_permutation::HashedIter;
-/// let mut iterator = HashedIter::new_with_seed(5, 100).unwrap();
+/// use std::num::NonZeroU32;
+///
+/// let mut iterator = HashedIter::new_with_seed(NonZeroU32::new(5).unwrap(), 100);
 ///
 /// for i in iterator {
 ///     println!("{}", i);
@@ -27,23 +30,23 @@ impl HashedIter {
     /// This will create an iterator with an underlying `HashedPermutation` engine with a random
     /// seed. The seed is generated using the standard library's `thread_rng` class.
     #[cfg(feature = "use-rand")]
-    pub fn new(length: u32) -> PermutationResult<Self> {
-        let permutation_engine = HashedPermutation::new(length)?;
+    pub fn new(length: NonZeroU32) -> Self {
+        let permutation_engine = HashedPermutation::new(length);
 
-        Ok(Self {
+        Self {
             permutation_engine,
             current_idx: 0,
-        })
+        }
     }
 
     /// Create a new hashed iterator with a given length and a seed value
-    pub fn new_with_seed(length: u32, seed: u32) -> PermutationResult<Self> {
-        let permutation_engine = HashedPermutation::new_with_seed(length, seed)?;
+    pub fn new_with_seed(length: NonZeroU32, seed: u32) -> Self {
+        let permutation_engine = HashedPermutation::new_with_seed(length, seed);
 
-        Ok(Self {
+        Self {
             permutation_engine,
             current_idx: 0,
-        })
+        }
     }
 }
 
@@ -71,8 +74,11 @@ mod test {
     /// This method defines the lengths and the seeds for the test cases, since these are reused
     /// in the tests, and it's best practice to consolidate them in one place so code is not
     /// repeated.
-    fn lengths_and_seeds() -> (Vec<u32>, Vec<u32>) {
-        let lengths = vec![100, 5, 13, 10234, 249];
+    fn lengths_and_seeds() -> (Vec<NonZeroU32>, Vec<u32>) {
+        let lengths: Vec<NonZeroU32> = vec![100, 5, 13, 128, 249]
+            .iter()
+            .map(|&x| NonZeroU32::new(x).unwrap())
+            .collect();
         let seeds = vec![100, 5, 13, 128, 249];
         assert_eq!(lengths.len(), seeds.len());
         (lengths, seeds)
@@ -85,8 +91,8 @@ mod test {
     fn test_bijection() {
         let (lengths, seeds) = lengths_and_seeds();
 
-        for (length, seed) in lengths.iter().zip(seeds) {
-            let it = HashedIter::new_with_seed(*length, seed).unwrap();
+        for (&length, seed) in lengths.iter().zip(seeds) {
+            let it = HashedIter::new_with_seed(length, seed);
 
             // Check that each entry doesn't exist
             // Check that every number is "hit" (as they'd have to be) for a perfect bijection
@@ -103,7 +109,7 @@ mod test {
             // Need to dereference the types into regular integers
             let mut result: Vec<u32> = set.into_iter().collect();
             result.sort();
-            let expected: Vec<u32> = (0..*length).collect();
+            let expected: Vec<u32> = (0..length.get()).collect();
             assert_eq!(expected, result);
         }
     }

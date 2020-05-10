@@ -14,11 +14,6 @@ pub enum PermutationError {
     /// of the permutation set (which is also the upper bound for the calling index).
     #[error("Attempted to shuffle index {shuffle}, but the length of the array is {max_shuffle}")]
     ShuffleOutOfRange { shuffle: u32, max_shuffle: u32 },
-
-    /// An construction error for when a hashed permutation instance is initialized with a length
-    /// of 0
-    #[error("The supplied length was too small")]
-    LengthTooSmall,
 }
 
 /// A permutation result, which is simply an alias for any type that could return a permutation
