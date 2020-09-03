@@ -17,6 +17,6 @@ doesn't require you to allocate a vector of size `n`, letting you sample the
 set without replacement.
 
 You can find the paper here: https://graphics.pixar.com/library/MultiJitteredSampling/paper.pdf.
-I have a little writeup of how the algorithm works [here](https://afnan.io/post/2019-04-05-explaining-the-hashed-permutation/),
+I have a little writeup of how the algorithm works [here](https://afnan.io/posts/2019-04-05-explaining-the-hashed-permutation),
 and [Timothy Hobbs](https://github.com/timthelion) made a nice writeup explaining how to use the library itself
 [here](https://timothy.hobbs.cz/rust-play/hashed-permutation.html).
