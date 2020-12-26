@@ -14,7 +14,7 @@ azure-devops = { project = "afnanenayet/hashed-permutation", pipeline = "afnanen
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-rand = { version = "0.7", optional = true }
+rand = { version = "0.8", optional = true }
 thiserror = "1.0"
 
 [features]
