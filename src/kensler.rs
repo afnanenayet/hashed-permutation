@@ -39,7 +39,7 @@ impl HashedPermutation {
 
     /// Create a new instance of the hashed permutation given a length and seed
     pub fn new_with_seed(length: NonZeroU32, seed: u32) -> Self {
-        HashedPermutation { length, seed }
+        HashedPermutation { seed, length }
     }
 
     /// Shuffle or permute a particular value.
