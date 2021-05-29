@@ -28,8 +28,8 @@ jobs:
     - name: Build
       uses: actions-rs/cargo@v1
       with:
-        command: build --all-features
-        args: --verbose
+        command: build
+        args: --verbose --all-features
     - name: Test
       uses: actions-rs/cargo@v1
       with:
