@@ -11,8 +11,8 @@ env:
 
 jobs:
   build:
-    name: Build ${{ matrix.job.os }}
-    runs-on: ${{ matrix.job.os }}
+    name: Build ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
         os:
