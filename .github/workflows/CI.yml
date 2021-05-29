@@ -1,0 +1,42 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    name: Build ${{ matrix.job.os }}
+    runs-on: ${{ matrix.job.os }}
+    strategy:
+      matrix:
+        os:
+        - macos-latest
+        - windows-latest
+        - ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install rust
+      uses: actions-rs/toolchain@v1
+    - name: Build
+      uses: actions-rs/cargo@v1
+      with:
+        command: build --all
+        args: --verbose
+    - name: Test
+      uses: actions-rs/cargo@v1
+      with:
+        command: test
+        args: --verbose --all
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+          target
+        key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
