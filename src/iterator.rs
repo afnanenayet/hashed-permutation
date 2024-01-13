@@ -97,14 +97,11 @@ mod test {
             // Check that each entry doesn't exist
             // Check that every number is "hit" (as they'd have to be) for a perfect bijection
             // Check that the number is within range
-            let mut set = HashSet::new();
+            let mut set = HashSet::with_capacity(length.get() as usize);
 
             for elem in it {
-                let set_result = set.get(&elem);
-
                 // Make sure there are no duplicates
-                assert!(set_result.is_none());
-                set.insert(elem);
+                assert!(set.insert(elem));
             }
             // Need to dereference the types into regular integers
             let mut result: Vec<u32> = set.into_iter().collect();
