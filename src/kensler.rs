@@ -46,6 +46,11 @@ impl HashedPermutation {
     ///
     /// This method uses the technique described in Kensler's paper to perform an in-place shuffle
     /// with no memory overhead.
+    ///
+    /// # Errors
+    ///
+    /// * [ShuffleOutOfRange](PermutationError::ShuffleOutOfRange): If the provided input is larger
+    ///   than the length of the permutation "vector".
     // We disable the `unreadable_literal` because these literals are arbitrary and don't really
     // need to be readable anyways.
     #[allow(clippy::unreadable_literal)]
