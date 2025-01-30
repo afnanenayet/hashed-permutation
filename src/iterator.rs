@@ -54,13 +54,16 @@ impl Iterator for HashedIter {
     type Item = u32;
 
     fn next(&mut self) -> Option<Self::Item> {
-        match self.permutation_engine.shuffle(self.current_idx) {
-            Ok(elem) => {
-                self.current_idx += 1;
-                Some(elem)
-            }
-            Err(_) => None,
+        if self.current_idx >= self.permutation_engine.length.into() {
+            return None;
         }
+        let res = unsafe {
+            self.permutation_engine
+                .shuffle(self.current_idx)
+                .unwrap_unchecked()
+        };
+        self.current_idx += 1;
+        Some(res)
     }
 }
 
