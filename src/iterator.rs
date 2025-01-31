@@ -30,6 +30,7 @@ impl HashedIter {
     /// This will create an iterator with an underlying `HashedPermutation` engine with a random
     /// seed. The seed is generated using the standard library's `thread_rng` class.
     #[cfg(feature = "use-rand")]
+    #[must_use]
     pub fn new(length: NonZeroU32) -> Self {
         let permutation_engine = HashedPermutation::new(length);
 
@@ -40,6 +41,7 @@ impl HashedIter {
     }
 
     /// Create a new hashed iterator with a given length and a seed value
+    #[must_use]
     pub fn new_with_seed(length: NonZeroU32, seed: u32) -> Self {
         let permutation_engine = HashedPermutation::new_with_seed(length, seed);
 

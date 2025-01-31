@@ -32,6 +32,7 @@ impl HashedPermutation {
     /// This method creates a hashed permutation of some length and initializes the seed to some
     /// random number created by Rust's `thread_rng`.
     #[cfg(feature = "use-rand")]
+    #[must_use]
     pub fn new(length: NonZeroU32) -> Self {
         // Uses thread-rng under the hood
         let seed = rand::random();
@@ -39,6 +40,7 @@ impl HashedPermutation {
     }
 
     /// Create a new instance of the hashed permutation given a length and seed
+    #[must_use]
     pub fn new_with_seed(length: NonZeroU32, seed: u32) -> Self {
         HashedPermutation { seed, length }
     }
