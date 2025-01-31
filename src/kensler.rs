@@ -5,9 +5,10 @@
 //! on correlated multi-jittered sampling.
 
 use crate::error::{PermutationError, PermutationResult};
+use std::num::{NonZeroU32, Wrapping};
+
 #[cfg(feature = "use-rand")]
 use rand::prelude::*;
-use std::num::{NonZeroU32, Wrapping};
 
 /// The `HashedPermutation` struct stores the initial `seed` and `length` of the permutation
 /// vector. In other words, if you want to shuffle the numbers from `0..n`, then `length = n`.

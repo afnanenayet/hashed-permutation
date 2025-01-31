@@ -8,15 +8,29 @@ authors = ["Afnan Enayet <afnan@afnan.io>"]
 edition = "2018"
 license = "MIT"
 readme = "docs/README.md"
+resolver = "2"
 
 [badges]
 azure-devops = { project = "afnanenayet/hashed-permutation", pipeline = "afnanenayet.hashed-permutation" }
 maintenance = { status = "actively-developed" }
 
 [dependencies]
-rand = { version = "0.8", optional = true }
+rand = { version = "0.9", optional = true }
 thiserror = "1.0"
 
 [features]
 default = []
 use-rand = ["rand"]
+
+[dev-dependencies]
+divan = "0.1.17"
+hashed-permutation = { path = ".", features = ["use-rand"] }
+
+[[bench]]
+name = "kensler"
+harness = false
+
+[profile.bench]
+debug = 2
+lto = "thin"
+codegen-units = 1
