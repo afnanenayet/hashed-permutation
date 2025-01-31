@@ -11,8 +11,8 @@ env:
 
 jobs:
   build:
-    name: Build ${{ matrix.os }}
-    runs-on: ${{ matrix.os }}
+    name: Build and test
+    runs-on: ubuntu-latest
     strategy:
       matrix:
         os:
@@ -20,25 +20,11 @@ jobs:
         - windows-latest
         - ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Install rust
-      uses: actions-rs/toolchain@v1
+    - uses: actions/checkout@v4
+    - name: Install Rust toolchain
+      uses: dtolnay/rust-toolchain@stable
+    - name: cache setup
+      uses: Swatinem/rust-cache@v2
       with:
-        toolchain: stable
-    - name: Build
-      uses: actions-rs/cargo@v1
-      with:
-        command: build
-        args: --verbose --all-features
-    - name: Test
-      uses: actions-rs/cargo@v1
-      with:
-        command: test
-        args: --verbose --all
-    - uses: actions/cache@v2
-      with:
-        path: |
-          ~/.cargo/registry
-          ~/.cargo/git
-          target
-        key: ${{ matrix.job.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+        save-if: ${{ github.ref == 'refs/heads/main' }}
+    - run: cargo nextest run --all-features && cargo test --doc
