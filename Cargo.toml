@@ -34,3 +34,6 @@ harness = false
 debug = 2
 lto = "thin"
 codegen-units = 1
+
+[[example]]
+name = "basic"
