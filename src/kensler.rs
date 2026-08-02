@@ -87,71 +87,106 @@ impl HashedPermutation {
 }
 
 #[cfg(test)]
-mod test {
+pub(crate) mod test {
     use super::*;
+    use proptest::{
+        arbitrary::any, prop_assert, prop_assert_eq, prop_compose, proptest, strategy::Just,
+    };
     use std::collections::HashMap;
 
-    /// A convenient helper method that returns a pair of lengths and seeds (in that order).
-    ///
-    /// This method defines the lengths and the seeds for the test cases, since these are reused
-    /// in the tests, and it's best practice to consolidate them in one place so code is not
-    /// repeated.
-    fn lengths_and_seeds() -> (Vec<NonZeroU32>, Vec<u32>) {
-        let lengths: Vec<NonZeroU32> = vec![100, 5, 13, 128, 249]
-            .iter()
-            .map(|&x| NonZeroU32::new(x).unwrap())
-            .collect();
-        let seeds = vec![100, 5, 13, 128, 249];
-        assert_eq!(lengths.len(), seeds.len());
-        (lengths, seeds)
-    }
-
-    #[test]
-    // This method is a sanity check that tests to see if a shuffle has points that all stay within
-    // the domain that they are supposed to.
-    fn test_domain() {
-        let (lengths, seeds) = lengths_and_seeds();
-
-        for (&length, seed) in lengths.iter().zip(seeds) {
-            let perm = HashedPermutation { seed, length };
-
+    proptest! {
+        #[test]
+        // This method is a sanity check that tests to see if a shuffle has points that all stay
+        // within the domain that they are supposed to.
+        fn test_domain(perm in arb_exhaustive_hash_perm()) {
             for i in 0..perm.length.get() {
                 let res = perm.shuffle(i);
-                assert!(res.is_ok());
-                assert!(res.unwrap() < perm.length.get());
+                prop_assert!(res.is_ok());
+                prop_assert!(res.unwrap() < perm.length.get());
             }
         }
     }
 
-    #[test]
-    // This method checks to see that a permutation does not have any collisions and that every
-    // number maps to another unique number. In other words, we are testing to see whether we have
-    // a bijective function.
-    fn test_bijection() {
-        let (lengths, seeds) = lengths_and_seeds();
-
-        for (length, seed) in lengths.iter().zip(seeds) {
-            let perm = HashedPermutation {
-                seed,
-                length: *length,
-            };
-
+    proptest! {
+        #[test]
+        // This method checks to see that a permutation does not have any collisions and that every
+        // number maps to another unique number. In other words, we are testing to see whether we
+        // have a bijective function.
+        fn test_bijection(perm in arb_exhaustive_hash_perm()) {
             // Check that each entry doesn't exist
             // Check that every number is "hit" (as they'd have to be) for a perfect bijection
             // Check that the number is within range
-            let mut map = HashMap::with_capacity(length.get() as usize);
+            let mut map = HashMap::with_capacity(perm.length.get() as usize);
 
             for i in 0..perm.length.get() {
-                let res = perm.shuffle(i);
-                let res = res.unwrap();
-                assert!(map.insert(res, i).is_none());
+                let res = perm.shuffle(i)?;
+                prop_assert!(map.insert(res, i).is_none());
             }
             let (mut keys_vec, mut vals_vec): (Vec<u32>, Vec<u32>) = map.iter().unzip();
             keys_vec.sort();
             vals_vec.sort();
-            let ground_truth: Vec<u32> = (0..length.get()).collect();
-            assert_eq!(ground_truth, keys_vec);
-            assert_eq!(ground_truth, vals_vec);
+            let ground_truth: Vec<u32> = (0..perm.length.get()).collect();
+            prop_assert_eq!(&ground_truth, &keys_vec);
+            prop_assert_eq!(&ground_truth, &vals_vec);
+        }
+    }
+
+    prop_compose! {
+        pub(crate) fn arb_seed()(id in any::<u32>()) -> u32 {
+            id
+        }
+    }
+
+    prop_compose! {
+        pub(crate) fn arb_length()(length in any::<NonZeroU32>()) -> NonZeroU32 {
+            length
+        }
+    }
+
+    prop_compose! {
+        pub(crate) fn arb_hash_perm()(length in arb_length(), seed in arb_seed()) -> HashedPermutation {
+            HashedPermutation {length, seed}
+        }
+    }
+
+    /// The largest length used by tests that shuffle every value in `0..length`.
+    ///
+    /// An arbitrary `NonZeroU32` would mean up to `u32::MAX` shuffles per case, so exhaustive
+    /// tests need a bound that keeps a single case cheap.
+    const MAX_EXHAUSTIVE_LENGTH: u32 = 512;
+
+    prop_compose! {
+        /// Generate a permutation small enough to exhaustively shuffle every value in its domain.
+        fn arb_exhaustive_hash_perm()
+                                   (length in 1..=MAX_EXHAUSTIVE_LENGTH, seed in arb_seed())
+                                   -> HashedPermutation {
+            HashedPermutation { length: NonZeroU32::new(length).unwrap(), seed }
+        }
+    }
+
+    prop_compose! {
+        /// Generate a length paired with an input that is out of range for that length.
+        ///
+        /// The input is drawn from `length..=u32::MAX` so that it's always at least `length`
+        /// without having to worry about overflowing when adding an offset.
+        fn arb_length_and_out_of_range_input()
+                                            (length in arb_length())
+                                            (input in length.get()..=u32::MAX, length in Just(length))
+                                            -> (NonZeroU32, u32) {
+            (length, input)
+        }
+    }
+
+    proptest! {
+        // this proptest needs to take an arbitrary seed, length, and an offset greater than the length
+        #[test]
+        fn out_of_range_errors_out(
+            seed in arb_seed(),
+            (length, input) in arb_length_and_out_of_range_input(),
+        ) {
+            let perm = HashedPermutation { seed, length };
+            let result = perm.shuffle(input);
+            prop_assert!(result.is_err());
         }
     }
 
