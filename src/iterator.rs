@@ -1,5 +1,5 @@
 use crate::HashedPermutation;
-use std::num::NonZeroU32;
+use std::{convert::TryInto, num::NonZeroU32};
 
 /// An iterator that allows you to iterate over a sequence of permuted numbers with O(1) space.
 pub struct HashedIter {
@@ -48,6 +48,11 @@ impl HashedIter {
             current_idx: 0,
         }
     }
+
+    #[must_use]
+    pub fn len(&self) -> NonZeroU32 {
+        self.permutation_engine.length
+    }
 }
 
 impl Iterator for HashedIter {
@@ -67,50 +72,47 @@ impl Iterator for HashedIter {
     }
 }
 
+impl From<HashedPermutation> for HashedIter {
+    fn from(value: HashedPermutation) -> Self {
+        Self {
+            permutation_engine: value,
+            current_idx: 0,
+        }
+    }
+}
+
 #[cfg(test)]
 mod test {
     use super::*;
+    use crate::kensler::test::arb_seed;
+    use proptest::{prop_compose, proptest};
     use std::collections::HashSet;
+    use std::num::NonZeroU32;
 
-    /// A convenient helper method that returns a pair of lengths and seeds (in that order).
-    ///
-    /// This method defines the lengths and the seeds for the test cases, since these are reused
-    /// in the tests, and it's best practice to consolidate them in one place so code is not
-    /// repeated.
-    fn lengths_and_seeds() -> (Vec<NonZeroU32>, Vec<u32>) {
-        let lengths: Vec<NonZeroU32> = vec![100, 5, 13, 128, 249]
-            .iter()
-            .map(|&x| NonZeroU32::new(x).unwrap())
-            .collect();
-        let seeds = vec![100, 5, 13, 128, 249];
-        assert_eq!(lengths.len(), seeds.len());
-        (lengths, seeds)
+    prop_compose! {
+        fn arb_hash_perm()(seed in arb_seed(), length in 1..=7000u32) -> HashedPermutation {
+            HashedPermutation { length: NonZeroU32::new(length).unwrap(), seed }
+        }
     }
 
-    #[test]
-    // This method checks to see that a permutation does not have any collisions and that every
-    // number maps to another unique number. In other words, we are testing to see whether we have
-    // a bijective function.
-    fn test_bijection() {
-        let (lengths, seeds) = lengths_and_seeds();
+    proptest! {
+        #[test]
+        // This method checks to see that a permutation does not have any collisions and that every
+        // number maps to another unique number. In other words, we are testing to see whether we have
+        // a bijective function.
+        fn test_bijection(hash_perm in arb_hash_perm()) {
+            let it: HashedIter = hash_perm.into();
+            let len = it.len().get();
+            let mut seen: HashSet<u32> = HashSet::new();
 
-        for (&length, seed) in lengths.iter().zip(seeds) {
-            let it = HashedIter::new_with_seed(length, seed);
-
-            // Check that each entry doesn't exist
-            // Check that every number is "hit" (as they'd have to be) for a perfect bijection
-            // Check that the number is within range
-            let mut set = HashSet::with_capacity(length.get() as usize);
-
-            for elem in it {
-                // Make sure there are no duplicates
-                assert!(set.insert(elem));
+            // first run through and make sure there's no collisions
+            for value in it {
+                assert!(!seen.contains(&value), "got hash collision for value {}", value);
+                seen.insert(value);
             }
-            // Need to dereference the types into regular integers
-            let mut result: Vec<u32> = set.into_iter().collect();
-            result.sort();
-            let expected: Vec<u32> = (0..length.get()).collect();
-            assert_eq!(expected, result);
+            // sinc we know hashset must be unique, the only way for the seen set length
+            // to equal our domain length is if every value was populated
+            assert_eq!(seen.len(), len as usize);
         }
     }
 }
