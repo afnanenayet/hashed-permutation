@@ -115,4 +115,28 @@ mod test {
             assert_eq!(seen.len(), len as usize);
         }
     }
+
+    #[test]
+    fn has_non_trivial_sequence() {
+        let length = 4;
+
+        // looking for a sequence that is not just trivial `next = (previous + 1) % length`
+
+        for seed in 0..100000 {
+            let mut iter =
+                HashedIter::new_with_seed(NonZeroU32::new(length).unwrap(), seed).peekable();
+
+            loop {
+                let (Some(current), Some(next)) = (iter.next(), iter.peek().cloned()) else {
+                    break;
+                };
+
+                if next != (current + 1) % length {
+                    return;
+                }
+            }
+        }
+
+        panic!("We have not found a sequence that is non trivial");
+    }
 }
